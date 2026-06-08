@@ -81,13 +81,25 @@ def indicators(df):
     return df
 
 def predict_price(df):
+
     d = df.dropna().copy()
+
     d["Day"] = np.arange(len(d))
+
     X = d[["Day"]]
     y = d["Close"]
+
     model = LinearRegression()
+
     model.fit(X, y)
-    return float(model.predict([[len(d)+30]])[0])
+
+    future = pd.DataFrame(
+        {"Day": [len(d) + 30]}
+    )
+
+    return float(
+        model.predict(future)[0]
+    )
 
 WATCHLIST = [
     "BEL.NS",
@@ -137,7 +149,15 @@ with tab1:
         low=df["Low"],
         close=df["Close"]
     )])
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(
+    fig,
+    width="stretch"
+)
+st.plotly_chart(
+    fig,
+    width="stretch",
+    key="candlestick_chart"  
+)
 
 with tab2:
     fig2 = go.Figure()
@@ -146,7 +166,11 @@ with tab2:
     fig2.add_scatter(x=df["Date"], y=df["EMA20"], name="EMA20")
     fig2.add_scatter(x=df["Date"], y=df["BB_UPPER"], name="BB Upper")
     fig2.add_scatter(x=df["Date"], y=df["BB_LOWER"], name="BB Lower")
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(
+    fig2,
+    width="stretch",
+    key="technical_chart"
+    )
 
     st.line_chart(df.set_index("Date")[["RSI"]])
     st.line_chart(df.set_index("Date")[["MACD","Signal"]])
@@ -163,6 +187,9 @@ with tab3:
         st.info("Neutral outlook")
 
 with tab4:
-    st.dataframe(df.tail(100), use_container_width=True)
+    st.dataframe(
+    df,
+    width="stretch"
+)
 
 st.caption("Single-file Stock Intelligence Platform")
