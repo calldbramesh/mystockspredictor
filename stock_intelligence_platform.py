@@ -89,6 +89,17 @@ def predict_price(df):
     model.fit(X, y)
     return float(model.predict([[len(d)+30]])[0])
 
+WATCHLIST = [
+    "BEL.NS",
+    "SUZLON.NS",
+    "VEDL.NS",
+    "VBL.NS",
+    "AVANTEL.NS",
+    "TATAPOWER.NS",
+    "GOLDBEES.NS",
+    "NIFTYBEES.NS"
+]
+
 st.title("📈 AI Stock Intelligence Platform")
 
 ticker = st.sidebar.text_input(
