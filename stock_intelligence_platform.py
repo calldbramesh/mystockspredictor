@@ -241,11 +241,10 @@ WATCHLIST = [
 
 st.title("📈 AI Stock Intelligence Platform")
 
-ticker = st.sidebar.text_input(
-    "Ticker",
-    "BEL.NS"
-)
+ticker = st.write("Selected Ticker:", ticker)
 period = st.sidebar.selectbox("Period", ["6mo","1y","2y","5y"])
+
+
 
 df = load_data(ticker, period)
 if "Close" not in df.columns:
