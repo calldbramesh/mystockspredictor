@@ -323,7 +323,7 @@ vol, sharpe, mdd = risk_metrics(df)
 
 sentiment, headlines = get_news_sentiment(ticker)
 
- technical_score = 50
+technical_score = 50
 
 if rf_signal == 1:
     technical_score += 20
