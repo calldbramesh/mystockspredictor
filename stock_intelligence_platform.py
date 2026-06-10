@@ -6,10 +6,27 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestClassifier
+from textblob import TextBlob
+import feedparser
 
 st.set_page_config(page_title="Stock Intelligence Platform", layout="wide")
 
 DB = sqlite3.connect("stock_platform.db", check_same_thread=False)
+
+cursor = DB.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS portfolio(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ticker TEXT,
+    quantity INTEGER,
+    buy_price REAL
+)
+""")
+
+DB.commit()
+
 
 def load_data(ticker, period="1y"):
 
@@ -80,6 +97,113 @@ def indicators(df):
 
     return df
 
+def get_news_sentiment(stock):
+
+    query = stock.replace(".NS", "")
+
+    url = f"https://news.google.com/rss/search?q={query}"
+
+    feed = feedparser.parse(url)
+
+    sentiments = []
+    headlines = []
+
+    for entry in feed.entries[:10]:
+
+        title = entry.title
+
+        score = TextBlob(
+            title
+        ).sentiment.polarity
+
+        sentiments.append(score)
+
+        headlines.append({
+            "headline": title,
+            "sentiment": round(score,3)
+        })
+
+    avg_sentiment = (
+        sum(sentiments)/len(sentiments)
+        if sentiments else 0
+    )
+
+    return avg_sentiment, headlines
+    
+def get_news_sentiment(stock):
+
+    query = stock.replace(".NS", "")
+
+    url = f"https://news.google.com/rss/search?q={query}"
+
+    feed = feedparser.parse(url)
+
+    sentiments = []
+    headlines = []
+
+    for entry in feed.entries[:10]:
+
+        title = entry.title
+
+        score = TextBlob(
+            title
+        ).sentiment.polarity
+
+        sentiments.append(score)
+
+        headlines.append({
+            "headline": title,
+            "sentiment": round(score,3)
+        })
+
+    avg_sentiment = (
+        sum(sentiments)/len(sentiments)
+        if sentiments else 0
+    )
+
+    return avg_sentiment, headlines
+
+def risk_metrics(df):
+
+    returns = (
+        df["Close"]
+        .pct_change()
+        .dropna()
+    )
+
+    volatility = (
+        returns.std()
+        * np.sqrt(252)
+    )
+
+    sharpe = (
+        returns.mean()
+        /
+        returns.std()
+    ) * np.sqrt(252)
+
+    cumulative = (
+        1 + returns
+    ).cumprod()
+
+    drawdown = (
+        cumulative
+        /
+        cumulative.cummax()
+    ) - 1
+
+    max_drawdown = (
+        drawdown.min()
+    )
+
+    return (
+        volatility,
+        sharpe,
+        max_drawdown
+    )
+
+
+    
 def predict_price(df):
 
     d = df.dropna().copy()
@@ -100,6 +224,8 @@ def predict_price(df):
     return float(
         model.predict(future)[0]
     )
+
+
 
 WATCHLIST = [
     "BEL.NS",
@@ -130,9 +256,76 @@ df.to_sql(ticker, DB, if_exists="replace", index=False)
 
 prediction = predict_price(df)
 current = float(df["Close"].iloc[-1])
+rf_signal, rf_confidence = generate_signal(df)
 
-tab1, tab2, tab3, tab4 = st.tabs(
-    ["Overview","Technical","Prediction","Database"]
+vol, sharpe, mdd = risk_metrics(df)
+
+sentiment, headlines = get_news_sentiment(
+    ticker
+)
+
+change = (
+    (prediction-current)
+    / current
+) * 100
+
+technical_score = 50
+
+if rf_signal == 1:
+    technical_score += 20
+
+if prediction > current:
+    technical_score += 20
+
+if df["MACD"].iloc[-1] > df["Signal"].iloc[-1]:
+    technical_score += 10
+
+ai_score = max(
+    0,
+    min(
+        100,
+        technical_score
+    )
+)
+
+
+def risk_metrics(df):
+
+    returns = df["Close"].pct_change().dropna()
+
+    volatility = returns.std() * np.sqrt(252)
+
+    sharpe = (
+        returns.mean() /
+        returns.std()
+    ) * np.sqrt(252)
+
+    cumulative = (1 + returns).cumprod()
+
+    drawdown = (
+        cumulative /
+        cumulative.cummax()
+    ) - 1
+
+    max_drawdown = drawdown.min()
+
+    return volatility, sharpe, max_drawdown
+
+
+
+
+
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(
+[
+    "Overview",
+    "Technical",
+    "Prediction",
+    "AI Signal",
+    "News",
+    "Risk",
+    "Portfolio",
+    "Database"
+]
 )
 
 with tab1:
@@ -186,10 +379,114 @@ with tab3:
     else:
         st.info("Neutral outlook")
 
+
+with tab4:
+
+    st.metric(
+        "Confidence",
+        f"{rf_confidence*100:.1f}%"
+    )
+
+    if rf_signal == 1:
+
+        st.success(
+            "BUY Signal"
+        )
+
+    else:
+
+        st.error(
+            "SELL Signal"
+        )
+
+    st.metric(
+        "AI Score",
+        ai_score
+    )
+
+with tab5:
+
+    st.metric(
+        "Sentiment",
+        round(sentiment,3)
+    )
+
+    for item in headlines:
+
+        st.write(
+            f"{item['sentiment']} | "
+            f"{item['headline']}"
+        )
+
+with tab6:
+
+    c1,c2,c3 = st.columns(3)
+
+    c1.metric(
+        "Volatility",
+        f"{vol:.2f}"
+    )
+
+    c2.metric(
+        "Sharpe",
+        f"{sharpe:.2f}"
+    )
+
+    c3.metric(
+        "Max Drawdown",
+        f"{mdd:.2%}"
+    )
+
+with tab7:
+
+    qty = st.number_input(
+        "Quantity",
+        min_value=1,
+        value=1
+    )
+
+    buy_price = st.number_input(
+        "Buy Price",
+        value=float(current)
+    )
+
+    if st.button(
+        "Add Position"
+    ):
+
+        cursor.execute(
+        """
+        INSERT INTO portfolio(
+        ticker,
+        quantity,
+        buy_price
+        )
+        VALUES(?,?,?)
+        """,
+        (
+            ticker,
+            qty,
+            buy_price
+        )
+        )
+
+        DB.commit()
+
+    portfolio_df = pd.read_sql(
+        "SELECT * FROM portfolio",
+        DB
+    )
+
+    st.dataframe(
+        portfolio_df,
+        width="stretch"
+    )
+
 with tab4:
     st.dataframe(
     df,
     width="stretch"
 )
+
 
 st.caption("Single-file Stock Intelligence Platform")
