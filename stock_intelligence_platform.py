@@ -220,32 +220,6 @@ def predict_price(df):
     )
 
 
-df = load_data(ticker, period)
-if "Close" not in df.columns:
-    st.error("Invalid ticker")
-    st.stop()
- 
-df = indicators(df)
-df.to_sql(ticker, DB, if_exists="replace", index=False)
-
-prediction = predict_price(df)
-
-current = float(
-    df["Close"].iloc[-1]
-)
-
-change = (
-    (prediction-current)
-    / current
-) * 100
-
-rf_signal, rf_confidence = generate_signal(df)
-
-vol, sharpe, mdd = risk_metrics(df)
-
-sentiment, headlines = get_news_sentiment(ticker)
-
-    
 def generate_signal(df):
 
     data = df.copy()
@@ -299,8 +273,6 @@ def generate_signal(df):
     return prediction, confidence
 
 
-
-
 def risk_metrics(df):
 
     returns = df["Close"].pct_change().dropna()
@@ -322,6 +294,36 @@ def risk_metrics(df):
     max_drawdown = drawdown.min()
 
     return volatility, sharpe, max_drawdown
+
+
+
+
+df = load_data(ticker, period)
+if "Close" not in df.columns:
+    st.error("Invalid ticker")
+    st.stop()
+ 
+df = indicators(df)
+df.to_sql(ticker, DB, if_exists="replace", index=False)
+
+prediction = predict_price(df)
+
+current = float(
+    df["Close"].iloc[-1]
+)
+
+change = (
+    (prediction-current)
+    / current
+) * 100
+
+rf_signal, rf_confidence = generate_signal(df)
+
+vol, sharpe, mdd = risk_metrics(df)
+
+sentiment, headlines = get_news_sentiment(ticker)
+
+    
 
 
 
