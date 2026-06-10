@@ -98,39 +98,7 @@ def indicators(df):
 
     return df
 
-def get_news_sentiment(stock):
-
-    query = stock.replace(".NS", "")
-
-    url = f"https://news.google.com/rss/search?q={query}"
-
-    feed = feedparser.parse(url)
-
-    sentiments = []
-    headlines = []
-
-    for entry in feed.entries[:10]:
-
-        title = entry.title
-
-        score = TextBlob(
-            title
-        ).sentiment.polarity
-
-        sentiments.append(score)
-
-        headlines.append({
-            "headline": title,
-            "sentiment": round(score,3)
-        })
-
-    avg_sentiment = (
-        sum(sentiments)/len(sentiments)
-        if sentiments else 0
-    )
-
-    return avg_sentiment, headlines
-    
+   
 def get_news_sentiment(stock):
 
     query = stock.replace(".NS", "")
@@ -205,26 +173,7 @@ def risk_metrics(df):
 
 
     
-def predict_price(df):
 
-    d = df.dropna().copy()
-
-    d["Day"] = np.arange(len(d))
-
-    X = d[["Day"]]
-    y = d["Close"]
-
-    model = LinearRegression()
-
-    model.fit(X, y)
-
-    future = pd.DataFrame(
-        {"Day": [len(d) + 30]}
-    )
-
-    return float(
-        model.predict(future)[0]
-    )
 
 
 
@@ -274,6 +223,11 @@ change = (
     / current
 ) * 100
 
+rf_signal, rf_confidence = generate_signal(df)
+
+vol, sharpe, mdd = risk_metrics(df)
+
+sentiment, headlines = get_news_sentiment(ticker)
 
 def predict_price(df):
 
@@ -405,10 +359,7 @@ with tab1:
         low=df["Low"],
         close=df["Close"]
     )])
-    st.plotly_chart(
-    fig,
-    width="stretch"
-)
+
 st.plotly_chart(
     fig,
     width="stretch",
@@ -544,12 +495,12 @@ with tab7:
         portfolio_df,
         width="stretch"
     )
-
-with tab4:
+with tab8:
     st.dataframe(
-    df,
-    width="stretch"
-)
+        df,
+        width="stretch"
+    )
+
 
 
 st.caption("Single-file Stock Intelligence Platform")
