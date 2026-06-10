@@ -323,7 +323,21 @@ vol, sharpe, mdd = risk_metrics(df)
 
 sentiment, headlines = get_news_sentiment(ticker)
 
-    
+ technical_score = 50
+
+if rf_signal == 1:
+    technical_score += 20
+
+if prediction > current:
+    technical_score += 20
+
+if df["MACD"].iloc[-1] > df["Signal"].iloc[-1]:
+    technical_score += 10
+
+ai_score = max(
+    0,
+    min(100, technical_score)
+)   
 
 
 
