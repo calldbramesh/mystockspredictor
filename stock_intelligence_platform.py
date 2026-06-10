@@ -9,6 +9,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestClassifier
 from textblob import TextBlob
 import feedparser
+from sklearn.ensemble import RandomForestClassifier
 
 st.set_page_config(page_title="Stock Intelligence Platform", layout="wide")
 
@@ -254,39 +255,56 @@ if "Close" not in df.columns:
 df = indicators(df)
 df.to_sql(ticker, DB, if_exists="replace", index=False)
 
-prediction = predict_price(df)
-current = float(df["Close"].iloc[-1])
-rf_signal, rf_confidence = generate_signal(df)
+def generate_signal(df):
 
-vol, sharpe, mdd = risk_metrics(df)
+    data = df.copy()
 
-sentiment, headlines = get_news_sentiment(
-    ticker
-)
+    data["Future"] = (
+        data["Close"].shift(-5)
+        >
+        data["Close"]
+    ).astype(int)
 
-change = (
-    (prediction-current)
-    / current
-) * 100
+    data = data[
+        [
+            "RSI",
+            "MACD",
+            "Signal",
+            "Future"
+        ]
+    ].dropna()
 
-technical_score = 50
+    if len(data) < 50:
+        return 0, 0
 
-if rf_signal == 1:
-    technical_score += 20
+    X = data[
+        [
+            "RSI",
+            "MACD",
+            "Signal"
+        ]
+    ]
 
-if prediction > current:
-    technical_score += 20
+    y = data["Future"]
 
-if df["MACD"].iloc[-1] > df["Signal"].iloc[-1]:
-    technical_score += 10
-
-ai_score = max(
-    0,
-    min(
-        100,
-        technical_score
+    model = RandomForestClassifier(
+        n_estimators=100,
+        random_state=42
     )
-)
+
+    model.fit(X, y)
+
+    latest = X.iloc[-1:]
+
+    prediction = model.predict(latest)[0]
+
+    confidence = (
+        model.predict_proba(latest)[0].max()
+    )
+
+    return prediction, confidence
+
+
 
 
 def risk_metrics(df):
