@@ -241,8 +241,17 @@ WATCHLIST = [
 
 st.title("📈 AI Stock Intelligence Platform")
 
-ticker = st.write("Selected Ticker:", ticker)
-period = st.sidebar.selectbox("Period", ["6mo","1y","2y","5y"])
+ticker = st.sidebar.selectbox(
+    "Select Stock",
+    WATCHLIST
+)
+
+st.write("Selected Ticker:", ticker)
+
+period = st.sidebar.selectbox(
+    "Period",
+    ["6mo","1y","2y","5y"]
+)
 
 
 
