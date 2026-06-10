@@ -172,11 +172,6 @@ def risk_metrics(df):
     )
 
 
-    
-
-
-
-
 WATCHLIST = [
     "BEL.NS",
     "SUZLON.NS",
@@ -202,6 +197,27 @@ period = st.sidebar.selectbox(
     ["6mo","1y","2y","5y"]
 )
 
+def predict_price(df):
+
+    d = df.dropna().copy()
+
+    d["Day"] = np.arange(len(d))
+
+    X = d[["Day"]]
+
+    y = d["Close"]
+
+    model = LinearRegression()
+
+    model.fit(X, y)
+
+    future = pd.DataFrame(
+        {"Day":[len(d)+30]}
+    )
+
+    return float(
+        model.predict(future)[0]
+    )
 
 
 df = load_data(ticker, period)
@@ -229,27 +245,6 @@ vol, sharpe, mdd = risk_metrics(df)
 
 sentiment, headlines = get_news_sentiment(ticker)
 
-def predict_price(df):
-
-    d = df.dropna().copy()
-
-    d["Day"] = np.arange(len(d))
-
-    X = d[["Day"]]
-
-    y = d["Close"]
-
-    model = LinearRegression()
-
-    model.fit(X, y)
-
-    future = pd.DataFrame(
-        {"Day":[len(d)+30]}
-    )
-
-    return float(
-        model.predict(future)[0]
-    )
     
 def generate_signal(df):
 
