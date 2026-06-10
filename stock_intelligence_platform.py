@@ -255,6 +255,40 @@ if "Close" not in df.columns:
 df = indicators(df)
 df.to_sql(ticker, DB, if_exists="replace", index=False)
 
+prediction = predict_price(df)
+
+current = float(
+    df["Close"].iloc[-1]
+)
+
+change = (
+    (prediction-current)
+    / current
+) * 100
+
+
+def predict_price(df):
+
+    d = df.dropna().copy()
+
+    d["Day"] = np.arange(len(d))
+
+    X = d[["Day"]]
+
+    y = d["Close"]
+
+    model = LinearRegression()
+
+    model.fit(X, y)
+
+    future = pd.DataFrame(
+        {"Day":[len(d)+30]}
+    )
+
+    return float(
+        model.predict(future)[0]
+    )
+    
 def generate_signal(df):
 
     data = df.copy()
@@ -297,7 +331,10 @@ def generate_signal(df):
     latest = X.iloc[-1:]
 
     prediction = model.predict(latest)[0]
-
+    current = float(
+    df["Close"].iloc[-1]
+    
+)
     confidence = (
         model.predict_proba(latest)[0].max()
     )
