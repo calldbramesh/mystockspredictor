@@ -584,16 +584,14 @@ with tab9:
 
     rankings = []
 
-  for stock in ALL_STOCKS:
+    for stock in ALL_STOCKS:
 
         result = ai_rank_stock(stock)
 
         if result:
             rankings.append(result)
 
-    rank_df = pd.DataFrame(
-        rankings
-    )
+    rank_df = pd.DataFrame(rankings)
 
     rank_df = rank_df.sort_values(
         "AI Score",
@@ -601,33 +599,31 @@ with tab9:
     )
 
     st.dataframe(
-    rank_df,
-    width="stretch"
-)
-
-if len(rank_df) >= 3:
-
-    c1,c2,c3 = st.columns(3)
-
-    c1.metric(
-        "🥇 Rank 1",
-        rank_df.iloc[0]["Stock"]
+        rank_df,
+        width="stretch"
     )
 
-    c2.metric(
-        "🥈 Rank 2",
-        rank_df.iloc[1]["Stock"]
+    if len(rank_df) >= 3:
+
+        c1, c2, c3 = st.columns(3)
+
+        c1.metric(
+            "🥇 Rank 1",
+            rank_df.iloc[0]["Stock"]
+        )
+
+        c2.metric(
+            "🥈 Rank 2",
+            rank_df.iloc[1]["Stock"]
+        )
+
+        c3.metric(
+            "🥉 Rank 3",
+            rank_df.iloc[2]["Stock"]
+        )
+
+    st.success(
+        f"🏆 Best Pick: {rank_df.iloc[0]['Stock']}"
     )
-
-    c3.metric(
-        "🥉 Rank 3",
-        rank_df.iloc[2]["Stock"]
-    )
-
-st.success(
-    f"🏆 Best Pick: "
-    f"{rank_df.iloc[0]['Stock']}"
-)
-
 
 st.caption("Single-file Stock Intelligence Platform")
