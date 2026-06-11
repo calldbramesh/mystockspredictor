@@ -588,20 +588,7 @@ with tab8:
 
 with tab9:
 
- st.info("WhatsApp integration coming soon")
-
-    best = rank_df.iloc[0]
-
-    msg = (
-        f"Top Pick\n\n"
-        f"Stock: {best['Stock']}\n"
-        f"AI Score: {best['AI Score']}\n"
-        f"Expected Return: {best['Expected Return %']}%"
-    )
-
-    # send_whatsapp(msg)
-
-    st.success("WhatsApp sent")
+    st.info("WhatsApp integration coming soon")
 
     rankings = []
 
@@ -639,23 +626,6 @@ with tab9:
         st.success(
             f"🏆 Best Pick: {best['Stock']}"
         )
-
-        if st.button(
-            "📲 Send Top Pick"
-        ):
-
-            msg = (
-                f"Top Pick\n\n"
-                f"Stock: {best['Stock']}\n"
-                f"AI Score: {best['AI Score']}\n"
-                f"Expected Return: {best['Expected Return %']}%"
-            )
-
-            # send_whatsapp(msg)
-
-            st.success(
-                "WhatsApp sent"
-            )
 
         if len(rank_df) >= 3:
 
