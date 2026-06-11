@@ -588,7 +588,8 @@ with tab8:
 
 with tab9:
 
-    st.info("WhatsApp integration coming soon")
+   # st.info("WhatsApp integration coming soon")
+     if st.button("📲 Send Top Pick"):
 
     rankings = []
 
