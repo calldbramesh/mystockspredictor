@@ -37,19 +37,6 @@ CREATE TABLE IF NOT EXISTS portfolio(
 DB.commit()
 
 
-
-def send_whatsapp(msg):
-
-    client = Client(
-        st.secrets["TWILIO_SID"],
-        st.secrets["TWILIO_TOKEN"]
-    )
-
-    client.messages.create(
-        from_='whatsapp:+14155238886',
-        body=msg,
-        to='whatsapp:+918099530301'
-    )
 @st.cache_data(ttl=60)
 def load_data(ticker, period="1y"):
 
@@ -278,6 +265,7 @@ def generate_signal(df):
     )
 
     return prediction, confidence
+    
 def ai_rank_stock(stock):
 
     try:
@@ -345,14 +333,6 @@ if st.button("📲 Send Top Pick"):
     msg = f"""
 🏆 Top Pick
 
-Stock: {best['Stock']}
-AI Score: {best['AI Score']}
-Expected Return: {best['Expected Return %']}%
-"""
-
-    send_whatsapp(msg)
-
-    st.success("WhatsApp sent")
     st.cache_data.clear()
     st.rerun()
     
@@ -610,7 +590,25 @@ with tab8:
         df.tail(50),
         width="stretch"
     )
+
+if st.button("📲 Send Top Pick"):
+
+    best = rank_df.iloc[0]
+
+    msg = f"""
 with tab9:
+
+   
+🏆 Top Pick
+
+Stock: {best['Stock']}
+AI Score: {best['AI Score']}
+Expected Return: {best['Expected Return %']}%
+"""
+
+    send_whatsapp(msg)
+
+    st.success("WhatsApp sent")
 
     rankings = []
 
