@@ -285,7 +285,58 @@ def generate_signal(df):
     )
 
     return prediction, confidence
+def ai_rank_stock(stock):
 
+    try:
+
+        temp = load_data(
+            stock,
+            "1y"
+        )
+
+        temp = indicators(temp)
+
+        current = float(
+            temp["Close"].iloc[-1]
+        )
+
+        prediction = predict_price(temp)
+
+        expected_return = (
+            (prediction-current)
+            / current
+        ) * 100
+
+        score = 50
+
+        if temp["RSI"].iloc[-1] < 40:
+            score += 15
+
+        if (
+            temp["MACD"].iloc[-1]
+            >
+            temp["Signal"].iloc[-1]
+        ):
+            score += 15
+
+        if expected_return > 5:
+            score += 20
+
+        if expected_return > 10:
+            score += 10
+
+        return {
+            "Stock": stock,
+            "Price": round(current,2),
+            "Expected Return %":
+                round(expected_return,2),
+            "AI Score":
+                min(score,100)
+        }
+
+    except:
+
+        return None
 
 def risk_metrics(df):
 
