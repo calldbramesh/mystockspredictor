@@ -23,7 +23,7 @@ def send_whatsapp(message):
 
     client.messages.create(
         from_="whatsapp:+14155238886",
-        to="whatsapp:+91YOUR_NUMBER",
+        to="whatsapp:+918099530301",
         body=message
     )
 universe = pd.read_csv("stocks200.csv")
