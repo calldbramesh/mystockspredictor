@@ -10,6 +10,22 @@ from textblob import TextBlob
 import feedparser
 from sklearn.ensemble import RandomForestClassifier
 from twilio.rest import Client
+
+def send_whatsapp(message):
+
+    account_sid = st.secrets["TWILIO_SID"]
+    auth_token = st.secrets["TWILIO_TOKEN"]
+
+    client = Client(
+        account_sid,
+        auth_token
+    )
+
+    client.messages.create(
+        from_="whatsapp:+14155238886",
+        to="whatsapp:+91YOUR_NUMBER",
+        body=message
+    )
 universe = pd.read_csv("stocks200.csv")
 
 ALL_STOCKS = (
