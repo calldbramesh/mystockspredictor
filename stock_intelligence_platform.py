@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS portfolio(
 
 DB.commit()
 
-
+@st.cache_data(ttl=3600)
 def load_data(ticker, period="1y"):
 
     df = yf.download(
@@ -170,28 +170,34 @@ def risk_metrics(df):
         max_drawdown
     )
 
-NIFTY50 = [...]
-NIFTYNEXT50 = [...]
-MIDCAP = [...]
-
-ALL_STOCKS = (
-    NIFTY50 +
-    NIFTYNEXT50 +
-    MIDCAP
-)
+ALL_STOCKS = [
+    # Nifty 50
+    # Nifty Next 50
+    # Midcap 100
+]
+stocks_to_scan = ALL_STOCKS[:scanner_size]
 
 st.title("📈 AI Stock Intelligence Platform")
+
+scanner_size = st.sidebar.selectbox(
+    "Scanner Size",
+    [25, 50, 100, 200],
+    index=2
+)
 
 ticker = st.sidebar.selectbox(
     "Select Stock",
     WATCHLIST
 )
 
-st.write("Selected Ticker:", ticker)
+#st.write("Selected Ticker:", ticker)
 
 period = st.sidebar.selectbox(
     "Period",
     ["6mo","1y","2y","5y"]
+)
+st.sidebar.success(
+    f"Selected: {ticker}"
 )
 
 def predict_price(df):
@@ -307,6 +313,13 @@ def ai_rank_stock(stock):
 
         if expected_return > 10:
             score += 10
+        vol, sharpe, mdd = risk_metrics(temp)
+
+        if sharpe > 1:
+            score += 10
+
+        if mdd > -0.20:
+            score += 5
 
         return {
             "Stock": stock,
@@ -556,11 +569,27 @@ st.dataframe(
     df.tail(50),
     width="stretch"
 )
+#stocks_to_scan = ALL_STOCKS[:scanner_size]
 with tab9:
+
+    progress = st.progress(0)
+
+total = len(stocks_to_scan)
+
+for i, stock in enumerate(stocks_to_scan):
+
+    result = ai_rank_stock(stock)
+
+    if result:
+        rankings.append(result)
+
+    progress.progress(
+        (i + 1) / total
+    )
 
     rankings = []
 
-    for stock in ALL_STOCKS:
+    for stock in stocks_to_scan:
 
         result = ai_rank_stock(stock)
 
