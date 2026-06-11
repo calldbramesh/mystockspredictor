@@ -35,6 +35,20 @@ CREATE TABLE IF NOT EXISTS portfolio(
 
 DB.commit()
 
+from twilio.rest import Client
+
+def send_whatsapp(msg):
+
+    client = Client(
+        st.secrets["TWILIO_SID"],
+        st.secrets["TWILIO_TOKEN"]
+    )
+
+    client.messages.create(
+        from_='whatsapp:+14155238886',
+        body=msg,
+        to='whatsapp:+918099530301'
+    )
 @st.cache_data(ttl=60)
 def load_data(ticker, period="1y"):
 
@@ -323,6 +337,21 @@ def ai_rank_stock(stock):
 
         return None
 if st.sidebar.button("🔄 Refresh Data"):
+if st.button("📲 Send Top Pick"):
+
+    best = rank_df.iloc[0]
+
+    msg = f"""
+🏆 Top Pick
+
+Stock: {best['Stock']}
+AI Score: {best['AI Score']}
+Expected Return: {best['Expected Return %']}%
+"""
+
+    send_whatsapp(msg)
+
+    st.success("WhatsApp sent")
     st.cache_data.clear()
     st.rerun()
     
