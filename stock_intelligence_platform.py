@@ -170,39 +170,15 @@ def risk_metrics(df):
         max_drawdown
     )
 
+NIFTY50 = [...]
+NIFTYNEXT50 = [...]
+MIDCAP = [...]
 
-
-WATCHLIST = [
-    "BEL.NS",
-    "SUZLON.NS",
-    "VEDL.NS",
-    "VBL.NS",
-    "AVANTEL.NS",
-    "TATAPOWER.NS",
-    "GOLDBEES.NS",
-    "NIFTYBEES.NS",
-    "HAL.NS",
-    "BDL.NS",
-    "COCHINSHIP.NS",
-    "ADANIGREEN.NS",
-    "NTPC.NS",
-    "RELIANCE.NS",
-    "TCS.NS",
-    "HDFCBANK.NS",
-    "SBIN.NS",
-    "IRFC.NS",
-    "IREDA.NS",
-    "BSE.NS"
-]
-
-ALL_STOCKS = WATCHLIST + [
-    "INFY.NS",
-    "BHARTIARTL.NS",
-    "ICICIBANK.NS",
-    "LT.NS",
-    "POWERGRID.NS",
-    "ONGC.NS"
-]
+ALL_STOCKS = (
+    NIFTY50 +
+    NIFTYNEXT50 +
+    MIDCAP
+)
 
 st.title("📈 AI Stock Intelligence Platform")
 
