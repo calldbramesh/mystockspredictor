@@ -6,7 +6,6 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 from sklearn.linear_model import LinearRegression
-from sklearn.ensemble import RandomForestClassifier
 from textblob import TextBlob
 import feedparser
 from sklearn.ensemble import RandomForestClassifier
@@ -196,6 +195,14 @@ WATCHLIST = [
     "BSE.NS"
 ]
 
+ALL_STOCKS = WATCHLIST + [
+    "INFY.NS",
+    "BHARTIARTL.NS",
+    "ICICIBANK.NS",
+    "LT.NS",
+    "POWERGRID.NS",
+    "ONGC.NS"
+]
 
 st.title("📈 AI Stock Intelligence Platform")
 
@@ -338,27 +345,7 @@ def ai_rank_stock(stock):
 
         return None
 
-def risk_metrics(df):
 
-    returns = df["Close"].pct_change().dropna()
-
-    volatility = returns.std() * np.sqrt(252)
-
-    sharpe = (
-        returns.mean() /
-        returns.std()
-    ) * np.sqrt(252)
-
-    cumulative = (1 + returns).cumprod()
-
-    drawdown = (
-        cumulative /
-        cumulative.cummax()
-    ) - 1
-
-    max_drawdown = drawdown.min()
-
-    return volatility, sharpe, max_drawdown
 
 
 
@@ -394,9 +381,15 @@ if rf_signal == 1:
     technical_score += 20
 
 if prediction > current:
-    technical_score += 20
+    technical_score += 15
 
 if df["MACD"].iloc[-1] > df["Signal"].iloc[-1]:
+    technical_score += 10
+
+if df["RSI"].iloc[-1] < 40:
+    technical_score += 10
+
+if sentiment > 0:
     technical_score += 10
 
 ai_score = max(
@@ -424,8 +417,8 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(
 
 with tab1:
     c1,c2,c3,c4 = st.columns(4)
-    c1.metric("Current", f"${current:.2f}")
-    c2.metric("Predicted 30D", f"${prediction:.2f}")
+    c1.metric("Current", f"₹{current:.2f}")
+    c2.metric("Predicted 30D", f"₹{prediction:.2f}")
     c3.metric("RSI", f"{df['RSI'].iloc[-1]:.2f}")
     c4.metric("Volume", f"{int(df['Volume'].iloc[-1]):,}")
 
@@ -571,17 +564,30 @@ with tab7:
     st.dataframe(
         portfolio_df,
         width="stretch"
-    )
+    )x`
 with tab8:
-    st.dataframe(
-        df,
-        width="stretch"
-    )
+    st.subheader("Stored Portfolio")
+
+portfolio_df = pd.read_sql(
+    "SELECT * FROM portfolio",
+    DB
+)
+
+st.dataframe(
+    portfolio_df,
+    width="stretch"
+)
+
+st.subheader("Latest Stock Data")
+
+st.dataframe(
+    df.tail(50),
+    width="stretch"
 with tab9:
 
     rankings = []
 
-    for stock in WATCHLIST:
+  for stock in ALL_STOCKS:
 
         result = ai_rank_stock(stock)
 
@@ -598,14 +604,33 @@ with tab9:
     )
 
     st.dataframe(
-        rank_df,
-        width="stretch"
+    rank_df,
+    width="stretch"
+)
+
+if len(rank_df) >= 3:
+
+    c1,c2,c3 = st.columns(3)
+
+    c1.metric(
+        "🥇 Rank 1",
+        rank_df.iloc[0]["Stock"]
     )
 
-    st.success(
-        f"🏆 Best Pick: "
-        f"{rank_df.iloc[0]['Stock']}"
+    c2.metric(
+        "🥈 Rank 2",
+        rank_df.iloc[1]["Stock"]
     )
+
+    c3.metric(
+        "🥉 Rank 3",
+        rank_df.iloc[2]["Stock"]
+    )
+
+st.success(
+    f"🏆 Best Pick: "
+    f"{rank_df.iloc[0]['Stock']}"
+)
 
 
 st.caption("Single-file Stock Intelligence Platform")
