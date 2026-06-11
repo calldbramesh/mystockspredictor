@@ -170,11 +170,13 @@ def risk_metrics(df):
         max_drawdown
     )
 
-ALL_STOCKS = [
-    # Nifty 50
-    # Nifty Next 50
-    # Midcap 100
+WATCHLIST = [
+    "BEL.NS",
+    "SUZLON.NS"
 ]
+
+ALL_STOCKS = WATCHLIST.copy()
+
 stocks_to_scan = ALL_STOCKS[:scanner_size]
 
 st.title("📈 AI Stock Intelligence Platform")
