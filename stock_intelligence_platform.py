@@ -188,17 +188,6 @@ st.title("📈 AI Stock Intelligence Platform")
 
 
 
-sector = st.sidebar.selectbox(
-    "Universe",
-    [
-        "All",
-        "Defense",
-        "Banking",
-        "IT",
-        "Energy"
-    ]
-)
-
 
 def predict_price(df):
 
