@@ -184,19 +184,6 @@ ALL_STOCKS = (
     .tolist()
 )
 
-scanner_size = st.sidebar.selectbox(
-    "Scanner Size",
-    [25, 50, 100, 200],
-    index=2
-)
-
-stocks_to_scan = ALL_STOCKS[:scanner_size]
-
-ticker = st.sidebar.selectbox(
-    "Select Stock",
-    ALL_STOCKS
-)
-
 st.title("📈 AI Stock Intelligence Platform")
 
 
@@ -415,9 +402,6 @@ ai_score = max(
 )   
 
 
-
-
-
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(
 [
     "Overview",
@@ -583,84 +567,79 @@ with tab7:
         width="stretch"
     )
 with tab8:
+
     st.subheader("Stored Portfolio")
 
-portfolio_df = pd.read_sql(
-    "SELECT * FROM portfolio",
-    DB
-)
-
-st.dataframe(
-    portfolio_df,
-    width="stretch"
-)
-
-st.subheader("Latest Stock Data")
-
-st.dataframe(
-    df.tail(50),
-    width="stretch"
-)
-#stocks_to_scan = ALL_STOCKS[:scanner_size]
-with tab9:
-
-    progress = st.progress(0)
-
-total = len(stocks_to_scan)
-
-for i, stock in enumerate(stocks_to_scan):
-
-    result = ai_rank_stock(stock)
-
-    if result:
-        rankings.append(result)
-
-    progress.progress(
-        (i + 1) / total
+    portfolio_df = pd.read_sql(
+        "SELECT * FROM portfolio",
+        DB
     )
+
+    st.dataframe(
+        portfolio_df,
+        width="stretch"
+    )
+
+    st.subheader("Latest Stock Data")
+
+    st.dataframe(
+        df.tail(50),
+        width="stretch"
+    )
+with tab9:
 
     rankings = []
 
-    for stock in stocks_to_scan:
+    progress = st.progress(0)
+
+    total = len(stocks_to_scan)
+
+    for i, stock in enumerate(stocks_to_scan):
 
         result = ai_rank_stock(stock)
 
         if result:
             rankings.append(result)
 
+        progress.progress(
+            (i + 1) / total
+        )
+
     rank_df = pd.DataFrame(rankings)
 
-    rank_df = rank_df.sort_values(
-        "AI Score",
-        ascending=False
-    )
+    if not rank_df.empty:
 
-    st.dataframe(
-        rank_df,
-        width="stretch"
-    )
-
-    if len(rank_df) >= 3:
-
-        c1, c2, c3 = st.columns(3)
-
-        c1.metric(
-            "🥇 Rank 1",
-            rank_df.iloc[0]["Stock"]
+        rank_df = rank_df.sort_values(
+            "AI Score",
+            ascending=False
         )
 
-        c2.metric(
-            "🥈 Rank 2",
-            rank_df.iloc[1]["Stock"]
+        st.dataframe(
+            rank_df,
+            width="stretch"
         )
 
-        c3.metric(
-            "🥉 Rank 3",
-            rank_df.iloc[2]["Stock"]
-        )
+        if len(rank_df) >= 3:
 
-    st.success(
-        f"🏆 Best Pick: {rank_df.iloc[0]['Stock']}"
-    )
+            c1, c2, c3 = st.columns(3)
+
+            c1.metric(
+                "🥇 Rank 1",
+                rank_df.iloc[0]["Stock"]
+            )
+
+            c2.metric(
+                "🥈 Rank 2",
+                rank_df.iloc[1]["Stock"]
+            )
+
+            c3.metric(
+                "🥉 Rank 3",
+                rank_df.iloc[2]["Stock"]
+            )
+
+        st.success(
+            f"🏆 Best Pick: {rank_df.iloc[0]['Stock']}"
+        )
 
 st.caption("Single-file Stock Intelligence Platform")
