@@ -579,57 +579,32 @@ with tab8:
     )
 with tab9:
 
-    st.subheader(
-        "Top Buying Opportunities"
-    )
-
-    opportunities = []
+    rankings = []
 
     for stock in WATCHLIST:
 
-        try:
+        result = ai_rank_stock(stock)
 
-            temp = load_data(
-                stock,
-                "1y"
-            )
+        if result:
+            rankings.append(result)
 
-            temp = indicators(temp)
-
-            pred = predict_price(temp)
-
-            current_price = float(
-                temp["Close"].iloc[-1]
-            )
-
-            expected_return = (
-                (pred-current_price)
-                / current_price
-            ) * 100
-
-            opportunities.append({
-                "Stock": stock,
-                "Current": round(current_price,2),
-                "Predicted": round(pred,2),
-                "Expected Return %":
-                    round(expected_return,2)
-            })
-
-        except:
-            pass
-
-    opp_df = pd.DataFrame(
-        opportunities
+    rank_df = pd.DataFrame(
+        rankings
     )
 
-    opp_df = opp_df.sort_values(
-        "Expected Return %",
+    rank_df = rank_df.sort_values(
+        "AI Score",
         ascending=False
     )
 
     st.dataframe(
-        opp_df,
+        rank_df,
         width="stretch"
+    )
+
+    st.success(
+        f"🏆 Best Pick: "
+        f"{rank_df.iloc[0]['Stock']}"
     )
 
 
