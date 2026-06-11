@@ -178,22 +178,49 @@ def risk_metrics(df):
         max_drawdown
     )
 
-WATCHLIST = [
-    "BEL.NS",
-    "SUZLON.NS"
-]
-
-ALL_STOCKS = WATCHLIST.copy()
-
-stocks_to_scan = ALL_STOCKS[:scanner_size]
-
-st.title("📈 AI Stock Intelligence Platform")
+ALL_STOCKS = (
+    universe["ticker"]
+    .dropna()
+    .tolist()
+)
 
 scanner_size = st.sidebar.selectbox(
     "Scanner Size",
     [25, 50, 100, 200],
     index=2
 )
+
+stocks_to_scan = ALL_STOCKS[:scanner_size]
+
+ticker = st.sidebar.selectbox(
+    "Select Stock",
+    WATCHLIST
+)
+
+scanner_size = st.sidebar.selectbox(
+    "Scanner Size",
+    [25, 50, 100, 200],
+    index=2
+)
+
+stocks_to_scan = ALL_STOCKS[:scanner_size]
+
+ticker = st.sidebar.selectbox(
+    "Select Stock",
+    WATCHLIST
+)
+
+stocks_to_scan = ALL_STOCKS[:scanner_size]
+
+scanner_size = st.sidebar.selectbox(
+    "Scanner Size",
+    [25, 50, 100, 200],
+    index=2
+)
+
+st.title("📈 AI Stock Intelligence Platform")
+
+
 
 sector = st.sidebar.selectbox(
     "Universe",
