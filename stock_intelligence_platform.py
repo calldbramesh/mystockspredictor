@@ -9,6 +9,14 @@ from sklearn.linear_model import LinearRegression
 from textblob import TextBlob
 import feedparser
 from sklearn.ensemble import RandomForestClassifier
+universe = pd.read_csv("stocks.csv")
+
+ALL_STOCKS = (
+    universe["ticker"]
+    .dropna()
+    .unique()
+    .tolist()
+)
 
 st.set_page_config(page_title="Stock Intelligence Platform", layout="wide")
 
@@ -187,12 +195,21 @@ scanner_size = st.sidebar.selectbox(
     index=2
 )
 
+sector = st.sidebar.selectbox(
+    "Universe",
+    [
+        "All",
+        "Defense",
+        "Banking",
+        "IT",
+        "Energy"
+    ]
+)
+
 ticker = st.sidebar.selectbox(
     "Select Stock",
     WATCHLIST
 )
-
-#st.write("Selected Ticker:", ticker)
 
 period = st.sidebar.selectbox(
     "Period",
