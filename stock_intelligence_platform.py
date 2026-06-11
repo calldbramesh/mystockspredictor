@@ -207,7 +207,7 @@ stocks_to_scan = ALL_STOCKS[:scanner_size]
 
 ticker = st.sidebar.selectbox(
     "Select Stock",
-    WATCHLIST
+    ALL_STOCKS
 )
 
 stocks_to_scan = ALL_STOCKS[:scanner_size]
@@ -235,7 +235,7 @@ sector = st.sidebar.selectbox(
 
 ticker = st.sidebar.selectbox(
     "Select Stock",
-    WATCHLIST
+    ALL_STOCKS
 )
 
 period = st.sidebar.selectbox(
