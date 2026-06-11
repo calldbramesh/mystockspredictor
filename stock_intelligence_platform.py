@@ -579,6 +579,7 @@ st.subheader("Latest Stock Data")
 st.dataframe(
     df.tail(50),
     width="stretch"
+)
 with tab9:
 
     rankings = []
