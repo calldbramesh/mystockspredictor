@@ -9,6 +9,7 @@ from sklearn.linear_model import LinearRegression
 from textblob import TextBlob
 import feedparser
 from sklearn.ensemble import RandomForestClassifier
+from twilio.rest import Client
 universe = pd.read_csv("stocks200.csv")
 
 ALL_STOCKS = (
@@ -35,7 +36,7 @@ CREATE TABLE IF NOT EXISTS portfolio(
 
 DB.commit()
 
-from twilio.rest import Client
+
 
 def send_whatsapp(msg):
 
