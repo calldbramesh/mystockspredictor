@@ -346,10 +346,6 @@ def ai_rank_stock(stock):
         return None
 
 
-
-
-
-
 df = load_data(ticker, period)
 if "Close" not in df.columns:
     st.error("Invalid ticker")
@@ -564,7 +560,7 @@ with tab7:
     st.dataframe(
         portfolio_df,
         width="stretch"
-    )x`
+    )
 with tab8:
     st.subheader("Stored Portfolio")
 
