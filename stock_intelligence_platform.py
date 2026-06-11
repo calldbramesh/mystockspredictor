@@ -629,17 +629,15 @@ with tab9:
         )
 if st.button("📲 Send Top Pick"):
 
-    msg = (
-        f"Top Pick\n\n"
-        f"Stock: {best['Stock']}\n"
-        f"AI Score: {best['AI Score']}\n"
-        f"Expected Return: {best['Expected Return %']}%"
-    )
+    msg = f"""
+Top Pick
 
-    send_whatsapp(msg)
-
-    st.success("WhatsApp sent")
-
+Stock: {best['Stock']}
+AI Score: {best['AI Score']}
+Expected Return: {best['Expected Return %']}%
+"""
+send_whatsapp(msg)
+st.success("WhatsApp sent")
         if len(rank_df) >= 3:
 
             c1, c2, c3 = st.columns(3)
