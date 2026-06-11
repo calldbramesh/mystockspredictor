@@ -9,7 +9,7 @@ from sklearn.linear_model import LinearRegression
 from textblob import TextBlob
 import feedparser
 from sklearn.ensemble import RandomForestClassifier
-universe = pd.read_csv("stocks.csv")
+universe = pd.read_csv("stocks200.csv")
 
 ALL_STOCKS = (
     universe["ticker"]
