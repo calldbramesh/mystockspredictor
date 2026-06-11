@@ -197,27 +197,6 @@ ticker = st.sidebar.selectbox(
     ALL_STOCKS
 )
 
-scanner_size = st.sidebar.selectbox(
-    "Scanner Size",
-    [25, 50, 100, 200],
-    index=2
-)
-
-stocks_to_scan = ALL_STOCKS[:scanner_size]
-
-ticker = st.sidebar.selectbox(
-    "Select Stock",
-    ALL_STOCKS
-)
-
-stocks_to_scan = ALL_STOCKS[:scanner_size]
-
-scanner_size = st.sidebar.selectbox(
-    "Scanner Size",
-    [25, 50, 100, 200],
-    index=2
-)
-
 st.title("📈 AI Stock Intelligence Platform")
 
 
