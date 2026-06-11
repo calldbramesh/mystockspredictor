@@ -173,6 +173,7 @@ def risk_metrics(df):
 
 
 WATCHLIST = [
+WATCHLIST = [
     "BEL.NS",
     "SUZLON.NS",
     "VEDL.NS",
@@ -180,7 +181,20 @@ WATCHLIST = [
     "AVANTEL.NS",
     "TATAPOWER.NS",
     "GOLDBEES.NS",
-    "NIFTYBEES.NS"
+    "NIFTYBEES.NS",
+    "HAL.NS",
+    "BDL.NS",
+    "COCHINSHIP.NS",
+    "ADANIGREEN.NS",
+    "NTPC.NS",
+    "RELIANCE.NS",
+    "TCS.NS",
+    "HDFCBANK.NS",
+    "SBIN.NS",
+    "IRFC.NS",
+    "IREDA.NS",
+    "BSE.NS"
+]
 ]
 
 st.title("📈 AI Stock Intelligence Platform")
@@ -343,7 +357,7 @@ ai_score = max(
 
 
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs(
 [
     "Overview",
     "Technical",
@@ -352,7 +366,8 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(
     "News",
     "Risk",
     "Portfolio",
-    "Database"
+    "Database",
+    "Top Picks"
 ]
 )
 
@@ -511,7 +526,60 @@ with tab8:
         df,
         width="stretch"
     )
+with tab9:
 
+    st.subheader(
+        "Top Buying Opportunities"
+    )
+
+    opportunities = []
+
+    for stock in WATCHLIST:
+
+        try:
+
+            temp = load_data(
+                stock,
+                "1y"
+            )
+
+            temp = indicators(temp)
+
+            pred = predict_price(temp)
+
+            current_price = float(
+                temp["Close"].iloc[-1]
+            )
+
+            expected_return = (
+                (pred-current_price)
+                / current_price
+            ) * 100
+
+            opportunities.append({
+                "Stock": stock,
+                "Current": round(current_price,2),
+                "Predicted": round(pred,2),
+                "Expected Return %":
+                    round(expected_return,2)
+            })
+
+        except:
+            pass
+
+    opp_df = pd.DataFrame(
+        opportunities
+    )
+
+    opp_df = opp_df.sort_values(
+        "Expected Return %",
+        ascending=False
+    )
+
+    st.dataframe(
+        opp_df,
+        width="stretch"
+    )
 
 
 st.caption("Single-file Stock Intelligence Platform")
