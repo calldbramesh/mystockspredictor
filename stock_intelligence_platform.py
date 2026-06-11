@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS portfolio(
 
 DB.commit()
 
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=60)
 def load_data(ticker, period="1y"):
 
     df = yf.download(
@@ -322,6 +322,10 @@ def ai_rank_stock(stock):
     except:
 
         return None
+if st.sidebar.button("🔄 Refresh Data"):
+    st.cache_data.clear()
+    st.rerun()
+    
 scanner_size = st.sidebar.selectbox(
     "Scanner Size",
     [25, 50, 100, 200],
@@ -342,6 +346,7 @@ period = st.sidebar.selectbox(
 )
 
 stocks_to_scan = ALL_STOCKS[:scanner_size]
+
 
 df = load_data(ticker, period)
 if "Close" not in df.columns:
