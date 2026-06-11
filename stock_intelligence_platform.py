@@ -588,7 +588,7 @@ with tab8:
 
 with tab9:
 
-    if st.button("📲 Send Top Pick"):
+ st.info("WhatsApp integration coming soon")
 
     best = rank_df.iloc[0]
 
