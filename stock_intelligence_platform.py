@@ -346,7 +346,26 @@ def ai_rank_stock(stock):
     except:
 
         return None
+scanner_size = st.sidebar.selectbox(
+    "Scanner Size",
+    [25, 50, 100, 200],
+    index=2,
+    key="scanner_size"
+)
 
+ticker = st.sidebar.selectbox(
+    "Select Stock",
+    ALL_STOCKS,
+    key="ticker_selector"
+)
+
+period = st.sidebar.selectbox(
+    "Period",
+    ["6mo", "1y", "2y", "5y"],
+    key="period_selector"
+)
+
+stocks_to_scan = ALL_STOCKS[:scanner_size]
 
 df = load_data(ticker, period)
 if "Close" not in df.columns:
