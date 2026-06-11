@@ -326,14 +326,9 @@ def ai_rank_stock(stock):
 
         return None
 if st.sidebar.button("🔄 Refresh Data"):
-if st.button("📲 Send Top Pick"):
-
-    best = rank_df.iloc[0]
-
-    msg = f"""
-🏆 Top Pick
 
     st.cache_data.clear()
+
     st.rerun()
     
 scanner_size = st.sidebar.selectbox(
@@ -592,6 +587,21 @@ with tab8:
     )
 
 with tab9:
+
+    if st.button("📲 Send Top Pick"):
+
+    best = rank_df.iloc[0]
+
+    msg = (
+        f"Top Pick\n\n"
+        f"Stock: {best['Stock']}\n"
+        f"AI Score: {best['AI Score']}\n"
+        f"Expected Return: {best['Expected Return %']}%"
+    )
+
+    # send_whatsapp(msg)
+
+    st.success("WhatsApp sent")
 
     rankings = []
 
