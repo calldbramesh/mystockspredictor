@@ -639,6 +639,22 @@ with tab9:
         )
 
         best = rank_df.iloc[0]
+        if st.button(
+    "📲 Send Top Pick"
+):
+
+    msg = (
+        f"Top Pick\n\n"
+        f"Stock: {best['Stock']}\n"
+        f"AI Score: {best['AI Score']}\n"
+        f"Expected Return: {best['Expected Return %']}%"
+    )
+
+    send_whatsapp(msg)
+
+    st.success(
+        "WhatsApp sent"
+    )
 
         st.success(
             f"🏆 Best Pick: {best['Stock']}"
