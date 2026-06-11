@@ -194,7 +194,7 @@ stocks_to_scan = ALL_STOCKS[:scanner_size]
 
 ticker = st.sidebar.selectbox(
     "Select Stock",
-    WATCHLIST
+    ALL_STOCKS
 )
 
 scanner_size = st.sidebar.selectbox(
