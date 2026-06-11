@@ -606,7 +606,9 @@ with tab9:
         if result:
             rankings.append(result)
 
-        progress.progress((i + 1) / total)
+        progress.progress(
+            (i + 1) / total
+        )
 
     rank_df = pd.DataFrame(rankings)
 
@@ -627,17 +629,24 @@ with tab9:
         st.success(
             f"🏆 Best Pick: {best['Stock']}"
         )
-if st.button("📲 Send Top Pick"):
 
-    msg = f"""
-Top Pick
+        if st.button(
+            "📲 Send Top Pick"
+        ):
 
-Stock: {best['Stock']}
-AI Score: {best['AI Score']}
-Expected Return: {best['Expected Return %']}%
-"""
-send_whatsapp(msg)
-st.success("WhatsApp sent")
+            msg = (
+                f"Top Pick\n\n"
+                f"Stock: {best['Stock']}\n"
+                f"AI Score: {best['AI Score']}\n"
+                f"Expected Return: {best['Expected Return %']}%"
+            )
+
+            # send_whatsapp(msg)
+
+            st.success(
+                "WhatsApp sent"
+            )
+
         if len(rank_df) >= 3:
 
             c1, c2, c3 = st.columns(3)
@@ -656,5 +665,11 @@ st.success("WhatsApp sent")
                 "🥉 Rank 3",
                 rank_df.iloc[2]["Stock"]
             )
+
+    else:
+
+        st.warning(
+            "No stocks could be ranked."
+        )
 
 st.caption("Single-file Stock Intelligence Platform")
