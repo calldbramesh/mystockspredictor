@@ -172,7 +172,7 @@ def risk_metrics(df):
     )
 
 
-WATCHLIST = [
+
 WATCHLIST = [
     "BEL.NS",
     "SUZLON.NS",
@@ -195,7 +195,7 @@ WATCHLIST = [
     "IREDA.NS",
     "BSE.NS"
 ]
-]
+
 
 st.title("📈 AI Stock Intelligence Platform")
 
