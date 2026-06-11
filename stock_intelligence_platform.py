@@ -212,20 +212,6 @@ sector = st.sidebar.selectbox(
     ]
 )
 
-ticker = st.sidebar.selectbox(
-    "Select Stock",
-    ALL_STOCKS
-)
-
-period = st.sidebar.selectbox(
-    "Period",
-    ["6mo","1y","2y","5y"]
-)
-
-stocks_to_scan = ALL_STOCKS[:scanner_size]
-st.sidebar.success(
-    f"Selected: {ticker}"
-)
 
 def predict_price(df):
 
