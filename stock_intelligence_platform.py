@@ -591,24 +591,7 @@ with tab8:
         width="stretch"
     )
 
-if st.button("📲 Send Top Pick"):
-
-    best = rank_df.iloc[0]
-
-    msg = f"""
 with tab9:
-
-   
-🏆 Top Pick
-
-Stock: {best['Stock']}
-AI Score: {best['AI Score']}
-Expected Return: {best['Expected Return %']}%
-"""
-
-    send_whatsapp(msg)
-
-    st.success("WhatsApp sent")
 
     rankings = []
 
@@ -623,9 +606,7 @@ Expected Return: {best['Expected Return %']}%
         if result:
             rankings.append(result)
 
-        progress.progress(
-            (i + 1) / total
-        )
+        progress.progress((i + 1) / total)
 
     rank_df = pd.DataFrame(rankings)
 
@@ -640,6 +621,26 @@ Expected Return: {best['Expected Return %']}%
             rank_df,
             width="stretch"
         )
+
+        best = rank_df.iloc[0]
+
+        st.success(
+            f"🏆 Best Pick: {best['Stock']}"
+        )
+
+        if st.button("📲 Send Top Pick"):
+
+            msg = f"""
+Top Pick
+
+Stock: {best['Stock']}
+AI Score: {best['AI Score']}
+Expected Return: {best['Expected Return %']}%
+"""
+
+            send_whatsapp(msg)
+
+            st.success("WhatsApp sent")
 
         if len(rank_df) >= 3:
 
@@ -659,9 +660,5 @@ Expected Return: {best['Expected Return %']}%
                 "🥉 Rank 3",
                 rank_df.iloc[2]["Stock"]
             )
-
-        st.success(
-            f"🏆 Best Pick: {rank_df.iloc[0]['Stock']}"
-        )
 
 st.caption("Single-file Stock Intelligence Platform")
